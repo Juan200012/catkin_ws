@@ -1,0 +1,11 @@
+<launch>
+
+    <arg name="run_node_A" default="false" />
+     <!-- Turtlesim Node-->
+    <node pkg="turtlesim" type="turtlesim_node" name="MECA"/>
+
+    <node pkg="beginner_tutorials" type="smart_turtle" name="smart_turtle">
+      <param name="run_node_A" value="$(arg run_node_A)"/>
+    </node>
+      
+</launch>
