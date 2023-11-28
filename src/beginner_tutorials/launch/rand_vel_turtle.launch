@@ -10,6 +10,5 @@
     type="pubvel"
     name="pubvel"
     required="true"
-    launch-prefix="xterm -e"
   />
 </launch>

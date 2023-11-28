@@ -1,67 +1,56 @@
-// This program publishes randomly-generated velocity
-// messages for turtlesim.
 #include <ros/ros.h>
-#include <geometry_msgs/Twist.h>  // For geometry_msgs::Twist
-#include <stdlib.h> // For rand() and RAND_MAX
-bool zafezone = true;
+#include <geometry_msgs/Twist.h>
+#include <stdlib.h>
+#include <turtlesim/Pose.h>
+#include <iomanip>
 
 void turtlePose(const turtlesim::Pose& msg) {
   ROS_INFO_STREAM(std::setprecision(2) << std::fixed
     << "position=(" <<  msg.x << "," << msg.y << ")"
     << " direction=" << msg.theta);
-    if(msg.x>=3 && msg.x<=8 && msg.y>=3 && msg.y<=8)
-    {
-      zafezone = true;
-    }
-    else
-      zafezone = false;
 }
 
 int main(int argc, char **argv) {
-  // Initialize the ROS system and become a node.
-  ros::init(argc, argv, "safe_zone_vel_publisher");
+  ros::init(argc, argv, "publish_and_subscribe");
   ros::NodeHandle nh;
 
-  // Create a publisher object.
-  ros::Publisher pub = nh.advertise<geometry_msgs::Twist>(
-    "turtle1/cmd_vel", 1000);
+  ros::Publisher pub = nh.advertise<geometry_msgs::Twist>("turtle1/cmd_vel", 1000);
+  ros::Subscriber sub = nh.subscribe("turtle1/pose", 1000, turtlePose);
 
-  // Create a subscriber object.
-  ros::Subscriber sub = nh.subscribe("turtle1/pose", 1000,
-    &turtlePose);
-
-
-  // Seed the random number generator.
   srand(time(0));
 
-  // Loop at 2Hz until the node is shut down.
   ros::Rate rate(2);
-  while(ros::ok()) {
+  while (ros::ok()) {
+    // Obtener la posición actual del robot
+    turtlesim::Pose::ConstPtr poseturtle = ros::topic::waitForMessage<turtlesim::Pose>("turtle1/pose");
 
-    // Create and fill in the message.  The other four
-    // fields, which are ignored by turtlesim, default to 0.
-    geometry_msgs::Twist msg;
-    msg.linear.x = 1.0;
-    msg.angular.z = 2*double(rand())/double(RAND_MAX) - 1;
-    if(zafezone)
+    // Verificar si se encuentra dentro de la zona segura 
+    if(poseturtle->x>=3 && poseturtle->x<=8 && poseturtle->y>=3 && poseturtle->y<=8)
     {
-      msg.linear.x = 1.0;
-      msg.angular.z = 2*double(rand())/double(RAND_MAX) - 1;
-    }
-    else
-    {
-      msg.linear.x = 1.0;
-      msg.angular.z = 2*double(rand())/double(RAND_MAX) - 1;
-    }
-    // Publish the message.
-    pub.publish(msg);
+      geometry_msgs::Twist msg;
+      msg.linear.x = 1,0;
+      msg.angular.z = 2 * double(rand()) / double(RAND_MAX) - 1;
 
-    // Send a message to rosout with the details.
-    ROS_INFO_STREAM("Sending random velocity command:"
+      pub.publish(msg);
+
+      ROS_INFO_STREAM("Sending random velocity command:"
       << " linear=" << msg.linear.x
       << " angular=" << msg.angular.z);
+    } 
+    else
+    {
+      geometry_msgs::Twist msg;
+      msg.linear.x = double(rand()) / double(RAND_MAX);
+      msg.angular.z = 2 * double(rand()) / double(RAND_MAX) - 1;
 
-    // Wait until it's time for another iteration.
+      pub.publish(msg);
+
+      ROS_INFO_STREAM("Sending random velocity command:"
+        << " linear=" << msg.linear.x
+        << " angular=" << msg.angular.z);
+    }
+
     rate.sleep();
+    ros::spinOnce();
   }
 }

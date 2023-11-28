@@ -2,9 +2,7 @@
 #include <geometry_msgs/Twist.h>
 #include <turtlesim/Pose.h>
 #include <stdlib.h>
-#include <time.h>
-
-bool runNodeA = false;
+#include <iomanip>
 
 void turtlePose(const turtlesim::Pose& msg) {
   ROS_INFO_STREAM(std::setprecision(2) << std::fixed
@@ -16,8 +14,6 @@ int main(int argc, char **argv) {
   ros::init(argc, argv, "publish_and_subscribe");
   ros::NodeHandle nh;
 
-  nh.param<bool>("run_node_A", runNodeA, false);
-
   ros::Publisher pub = nh.advertise<geometry_msgs::Twist>("turtle1/cmd_vel", 1000);
   ros::Subscriber sub = nh.subscribe("turtle1/pose", 1000, turtlePose);
 
@@ -25,7 +21,7 @@ int main(int argc, char **argv) {
 
   ros::Rate rate(2);
   while (ros::ok()) {
-    // Obtener la posición actual del robot
+    // Obtener la posición actual de la tortuga
     turtlesim::Pose::ConstPtr poseturtle = ros::topic::waitForMessage<turtlesim::Pose>("turtle1/pose");
 
     // Verificar si se encuentra dentro de la zona segura
@@ -62,5 +58,6 @@ int main(int argc, char **argv) {
         << " angular=" << msg.angular.z);
     }
     rate.sleep();
+    ros::spinOnce();
   }
 }

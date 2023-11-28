@@ -2,11 +2,13 @@
 #include <std_srvs/Empty.h>
 #include <geometry_msgs/Twist.h>
 #include <message_tests/Changerate.h>
+#include <beginner_tutorials/ChangeSpeed.h>
 
 bool forward = true;
 double newfrequency;
 bool ratechanged = false;
-ros::Publisher pub;
+bool turtle_running = true;
+double turtle_speed = 1.0;
 
 bool toggleForward(
     std_srvs::Empty::Request &req,
@@ -18,11 +20,9 @@ bool toggleForward(
 }
 
 bool changeRate(
-        message_tests::Changerate::Request &req,
-        message_tests::Changerate::Response &resp){
-
+    message_tests::Changerate::Request &req,
+    message_tests::Changerate::Response &resp){
         ROS_INFO_STREAM("Changing rate to "<<req.newrate);
-
         newfrequency = req.newrate;
         ratechanged = true;
         return true;
@@ -30,22 +30,23 @@ bool changeRate(
 
 bool startTurtle(
     std_srvs::Empty::Request &req,
-    std_srvs::Empty::Response &resp){
-        forward = true;
-        ROS_INFO_STREAM("Starting turtle movement.");
-        return true;
+    std_srvs::Empty::Response &resp) {
+    turtle_running = !turtle_running;
+    ROS_INFO_STREAM("Turtle is now " << (turtle_running ? "running" : "stopped") << ".");
+    return true;
 }
 
-bool stopTurtle(
-    std_srvs::Empty::Request &req,
-    std_srvs::Empty::Response &resp){
-        forward = false;
-        ROS_INFO_STREAM("Stopping turtle movement.");
-        return true;
+bool changeSpeed(
+    beginner_tutorials::ChangeSpeed::Request &req,
+    beginner_tutorials::ChangeSpeed::Response &res) {
+    turtle_speed = req.new_speed;
+    ROS_INFO_STREAM("Changed turtle speed to: " << turtle_speed);
+    res.success = true;
+    return true;
 }
 
 int main(int argc, char **argv){
-    ros::init(argc,argv,"pubvel_toggle_rate");
+    ros::init(argc,argv,"improved_pubvel_toggle");
     ros::NodeHandle nh;
 
     ros::ServiceServer server_toggle_forward = 
@@ -53,23 +54,27 @@ int main(int argc, char **argv){
     
     ros::ServiceServer server_change_rate =
         nh.advertiseService("change_rate", &changeRate);
-    
-    ros::ServiceServer server_start_turtle =
+
+    ros::ServiceServer server_toggle_turtle = 
         nh.advertiseService("start_turtle", &startTurtle);
 
-    ros::ServiceServer server_stop_turtle =
-        nh.advertiseService("stop_turtle", &stopTurtle);
+    ros::ServiceServer server_change_speed =
+        nh.advertiseService("change_speed", &changeSpeed);
 
-    pub = nh.advertise<geometry_msgs::Twist>("turtle1/cmd_vel", 1000);
+    ros::Publisher pub=nh.advertise<geometry_msgs::Twist>(
+		"turtle1/cmd_vel",1000);
 
     ros::Rate rate(2);
     while(ros::ok()){
         geometry_msgs::Twist msg;
-        msg.linear.x = forward ? 1.0 : 0.0;
-        msg.angular.z = forward ? 0.0 : 1.0;
-        pub.publish(msg);
+        if (turtle_running) {
+            msg.linear.x = forward?turtle_speed:0.0;
+            msg.angular.z=forward?0.0:turtle_speed;
+		    pub.publish(msg);
+        }
+
         ros::spinOnce();
-        if(ratechanged) {
+        if (ratechanged) {
             rate = ros::Rate(newfrequency);
             ratechanged = false;
         }

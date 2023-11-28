@@ -1,11 +1,12 @@
 <launch>
 
     <arg name="run_node_A" default="false" />
-     <!-- Turtlesim Node-->
-    <node pkg="turtlesim" type="turtlesim_node" name="MECA"/>
+    <arg name="run_node_B" default="false" />
+     
+    <node pkg="turtlesim" type="turtlesim_node" name="turtlesim" output="screen"/>
 
-    <node pkg="beginner_tutorials" type="smart_turtle" name="smart_turtle">
-      <param name="run_node_A" value="$(arg run_node_A)"/>
-    </node>
+    <node pkg="beginner_tutorials" type="smart_turtle" name="smart_turtle" output="screen" if="$(arg run_node_A)"/>
+
+    <node pkg="beginner_tutorials" type="safe_zone_vel_publisher" name="safe_zone_vel_publisher" output="screen" if="$(arg run_node_B)"/>
       
 </launch>

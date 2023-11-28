@@ -1,16 +1,12 @@
 <launch>
 
-  <arg name="teleopturtle" default="teleop_key"/>
+  <arg name="teleop" default="false" />
+  <arg name="random" default="false"/>
 
-  <node pkg="turtlesim" type="turtlesim_node" name="MECA"/>
+  <node pkg="turtlesim" type="turtlesim_node" name="turtlesim"/>
   
-  <group if="$(eval teleopturtle=='teleop_key')">
-    <node name="teleop_key" pkg="turtlesim" type="turtle_teleop_key" output="screen"/>
-  </group>
+  <node if="$(arg teleop)" name="teleop_key" pkg="turtlesim" type="turtle_teleop_key" output="screen"/>
 
-  <group unless="$(eval teleopturtle=='rand_vel')">
-    <node name="rand_vel" pkg="beginner_tutorials" type="pubvel"  output="screen">
-    </node>
-  </group>
+  <node if="$(arg random)" name="rand_vel" pkg="beginner_tutorials" type="pubvel"  output="screen"/>
 
 </launch>

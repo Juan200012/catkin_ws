@@ -32,7 +32,7 @@
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen">
     </node>
 
-    <rosparam command="load"
+    <rosparam command="load"    
                 file="$(find urdf_examples)/config/joints.yaml"
                 ns="r2d2_joint_state_controller" />
 
