@@ -201,6 +201,9 @@ include_directories(
 ## Testing ##
 #############
 
+# Specify locations of header files.
+include_directories(include ${catkin_INCLUDE_DIRS})
+
 ## Add gtest based cpp test target and link libraries
 # catkin_add_gtest(${PROJECT_NAME}-test test/test_beginner_tutorials.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
@@ -262,3 +265,4 @@ add_executable(spawn_turtle_plus src/spawn_turtle_plus.cpp)
 
 # Specify libraries against which to link.
 target_link_libraries(spawn_turtle_plus ${catkin_LIBRARIES})
+add_dependencies(spawn_turtle_plus ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
