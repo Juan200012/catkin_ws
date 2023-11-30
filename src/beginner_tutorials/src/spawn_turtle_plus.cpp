@@ -69,10 +69,6 @@ int main(int argc, char **argv){
     ros::Subscriber sub = nh.subscribe(
         "turtle1/cmd_vel", 1000, turtleVel);
 
-    /*ros::Subscriber cmdVelSub = nh.subscribe(
-        "turtle1/cmd_vel", 10, cmdVelCallback);*/
-
-
     ros::Rate rate(10);
     while(ros::ok()){
 

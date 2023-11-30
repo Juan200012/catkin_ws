@@ -1,0 +1,6 @@
+float32 turtle1_x
+float32 turtle1_y
+float32 turtle2_x
+float32 turtle2_y
+---
+float32 distance

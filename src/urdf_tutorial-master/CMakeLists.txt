@@ -204,3 +204,7 @@ target_link_libraries(urdf_tutorial_a ${catkin_LIBRARIES})
 add_executable(urdf_tutorial_b src/urdf_tutorial_b.cpp)
 
 target_link_libraries(urdf_tutorial_b ${catkin_LIBRARIES})
+
+add_executable(ejercicio3 src/ejercicio3.cpp)
+
+target_link_libraries(ejercicio3 ${catkin_LIBRARIES})

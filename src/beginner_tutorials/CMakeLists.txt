@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   genmsg
   geometry_msgs
   turtlesim
+  
 )
 
 ## System dependencies are found with CMake's conventions
@@ -62,6 +63,7 @@ add_service_files(
   AddTwoInts.srv
   ChangeSpeed.srv
   RotateTurtle.srv
+  TurtleDistance.srv
 ) 
 
 ## Generate actions in the 'action' folder
@@ -266,3 +268,15 @@ add_executable(spawn_turtle_plus src/spawn_turtle_plus.cpp)
 # Specify libraries against which to link.
 target_link_libraries(spawn_turtle_plus ${catkin_LIBRARIES})
 add_dependencies(spawn_turtle_plus ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
+
+add_executable(move_second_turtle src/move_second_turtle.cpp)
+target_link_libraries(move_second_turtle ${catkin_LIBRARIES})
+add_dependencies(move_second_turtle ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
+
+add_executable(distance_checker_plus src/distance_checker_plus.cpp)
+target_link_libraries(distance_checker_plus ${catkin_LIBRARIES})
+add_dependencies(distance_checker_plus ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
+
+add_executable(distance_observer src/distance_observer.cpp)
+target_link_libraries(distance_observer ${catkin_LIBRARIES})
+add_dependencies(distance_observer ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
